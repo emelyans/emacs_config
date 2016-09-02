@@ -49,7 +49,9 @@
 (or (file-exists-p package-user-dir)
     (package-refresh-contents))
 
-(ensure-package-installed 'auto-complete 'yasnippet 'auto-complete-c-headers)
+(ensure-package-installed 'powerline 'auto-complete 'yasnippet 'auto-complete-c-headers)
+
+(powerline-center-theme)
 
 ;; start auto-coplete with emacs
 (require 'auto-complete)

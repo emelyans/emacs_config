@@ -2,12 +2,37 @@
  '(custom-enabled-themes (quote (tango-dark))))
 (custom-set-faces)
 
+;; Transparent Emacs
+;; See https://www.emacswiki.org/emacs/TransparentEmacs
+;;(set-frame-parameter (selected-frame) 'alpha '(<active> . <inactive>))
+;;(set-frame-parameter (selected-frame) 'alpha <both>)
+;;(set-frame-parameter (selected-frame) 'alpha '(85 . 50))
+;;(add-to-list 'default-frame-alist '(alpha . (85 . 50)))
+(defun toggle-transparency ()
+  (interactive)
+  (let ((alpha (frame-parameter nil 'alpha)))
+    (set-frame-parameter
+     nil 'alpha
+     (if (eql (cond ((numberp alpha) alpha)
+                    ((numberp (cdr alpha)) (cdr alpha))
+                    ;; Also handle undocumented (<active> <inactive>) form.
+                    ((numberp (cadr alpha)) (cadr alpha)))
+              100)
+         '(85 . 50) '(100 . 100)))))
+(global-set-key (kbd "C-c t") 'toggle-transparency)
+;; Set transparency of emacs
+(defun transparency (value)
+  "Sets the transparency of the frame window. 0=transparent/100=opaque"
+  (interactive "nTransparency Value 0 - 100 opaque:")
+  (set-frame-parameter (selected-frame) 'alpha value))
+
 ;; Configuring proxy.
 ;; See https://www.emacswiki.org/emacs/InstallingPackages
 ;; (setq url-proxy-services
 ;;     '(("no_proxy" . "^\\(localhost\\|10.*\\)")
 ;;       ("http" . "PROXY:PORT")
 ;;       ("https" . "PROXY:PORT")))
+
 
 ;; Loading package manager and addingsome package repositories
 ;; See http://blog.aaronbieber.com/2015/05/24/from-vim-to-emacs-in-fourteen-days.html
@@ -36,39 +61,7 @@
     (package-refresh-contents))
 
 ;; Assuming you wish to install "Evil"
-(ensure-package-installed 'evil)
-;; Turning on evil-mode
-;; See https://www.emacswiki.org/emacs/Evil
-(require 'evil)
-(evil-mode 1)
+(ensure-package-installed 'powerline)
 
-;; Lisp Interaction Mode key bindings
-;; See http://blog.aaronbieber.com/2016/08/07/getting-started-with-emacs-lisp.html
-(define-key lisp-interaction-mode-map (kbd "<C-return>") 'eval-last-sexp)
-;;(evil-define-key 'insert global-map (kbd "s-d") 'eval-last-sexp)
-;;(evil-define-key 'normal global-map (kbd "s-d") 'eval-defun)
-
-;; Transparent Emacs
-;; See https://www.emacswiki.org/emacs/TransparentEmacs
-;;(set-frame-parameter (selected-frame) 'alpha '(<active> . <inactive>))
-;;(set-frame-parameter (selected-frame) 'alpha <both>)
-;;(set-frame-parameter (selected-frame) 'alpha '(85 . 50))
-;;(add-to-list 'default-frame-alist '(alpha . (85 . 50)))
-(defun toggle-transparency ()
-  (interactive)
-  (let ((alpha (frame-parameter nil 'alpha)))
-    (set-frame-parameter
-     nil 'alpha
-     (if (eql (cond ((numberp alpha) alpha)
-                    ((numberp (cdr alpha)) (cdr alpha))
-                    ;; Also handle undocumented (<active> <inactive>) form.
-                    ((numberp (cadr alpha)) (cadr alpha)))
-              100)
-         '(85 . 50) '(100 . 100)))))
-(global-set-key (kbd "C-c t") 'toggle-transparency)
-;; Set transparency of emacs
-(defun transparency (value)
-  "Sets the transparency of the frame window. 0=transparent/100=opaque"
-  (interactive "nTransparency Value 0 - 100 opaque:")
-  (set-frame-parameter (selected-frame) 'alpha value))
+(powerline-center-theme)
 
