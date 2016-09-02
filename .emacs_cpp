@@ -1,0 +1,61 @@
+(custom-set-variables
+ '(custom-enabled-themes (quote (tango-dark))))
+(custom-set-faces)
+
+;; Transparent Emacs
+;; See https://www.emacswiki.org/emacs/TransparentEmacs
+;;(set-frame-parameter (selected-frame) 'alpha '(<active> . <inactive>))
+;;(set-frame-parameter (selected-frame) 'alpha <both>)
+;;(set-frame-parameter (selected-frame) 'alpha '(85 . 50))
+;;(add-to-list 'default-frame-alist '(alpha . (85 . 50)))
+(defun toggle-transparency ()
+  (interactive)
+  (let ((alpha (frame-parameter nil 'alpha)))
+    (set-frame-parameter
+     nil 'alpha
+     (if (eql (cond ((numberp alpha) alpha)
+                    ((numberp (cdr alpha)) (cdr alpha))
+                    ;; Also handle undocumented (<active> <inactive>) form.
+                    ((numberp (cadr alpha)) (cadr alpha)))
+              100)
+         '(85 . 50) '(100 . 100)))))
+(global-set-key (kbd "C-c t") 'toggle-transparency)
+;; Set transparency of emacs
+(defun transparency (value)
+  "Sets the transparency of the frame window. 0=transparent/100=opaque"
+  (interactive "nTransparency Value 0 - 100 opaque:")
+  (set-frame-parameter (selected-frame) 'alpha value))
+
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
+(package-initialize)
+
+;; Automatically installing packages
+;; See http://blog.aaronbieber.com/2015/05/24/from-vim-to-emacs-in-fourteen-days.html
+(defun ensure-package-installed (&rest packages)
+  "Assure every package is installed, ask for installation if it's not.
+  Return a list of installed packages or nil for every skipped package."
+  (mapcar
+   (lambda (package)
+     (if (package-installed-p package)
+         nil
+       (if (y-or-n-p (format "Package %s is missing. Install it? " package))
+           (package-install package)
+         package)))
+   packages))
+;; Make sure to have downloaded archive description.
+(or (file-exists-p package-user-dir)
+    (package-refresh-contents))
+
+;; Assuming you wish to install "Evil"
+;;(ensure-package-installed 'evil)
+
+(ensure-package-installed 'auto-complete)
+
+;; start auto-coplete with emacs
+(require 'auto-complete)
+;; do default config for auto-complete
+(require 'auto-complete-config)
+(ac-config-default)
