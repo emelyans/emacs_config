@@ -49,7 +49,7 @@
 (or (file-exists-p package-user-dir)
     (package-refresh-contents))
 
-(ensure-package-installed 'powerline 'auto-complete 'yasnippet 'auto-complete-c-headers)
+(ensure-package-installed 'powerline 'auto-complete 'yasnippet 'auto-complete-c-headers 'iedit)
 
 (powerline-center-theme)
 
@@ -72,3 +72,20 @@
 ;; call the above function from c/c++ hooks
 (add-hook 'c++-mode-hook 'my:ac-c-header-init)
 (add-hook 'c-mode-hook 'my:ac-c-header-init)
+
+(require 'iedit)
+
+; turn on Semantic
+(semantic-mode 1)
+;; define a function which adds semantic as a suggestion backend to auto complete
+;; and hook this function to c-mode-common-hook
+(defun my:add-semantic-to-autocomplete ()
+  (add-to-list 'ac-sources 'ac-source-semantic)
+)
+(add-hook 'c-mode-common-hook 'my:add-semantic-to-autocomplete)
+;; turn on ede mode
+(global-ede-mode 1)
+;; create a project
+(ede-cpp-root-project "my project" :file "~/src/cpp/my_program/src/main.cpp"
+		      :include-path '("/../my_inc"))
+(global-semantic-idle-scheduler-mode 1)
